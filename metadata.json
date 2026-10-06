@@ -1,0 +1,6 @@
+{
+  "name": "Historia Clínica Evolutiva Coaching",
+  "description": "Historia Clínica Evolutiva y dashboard de neuroplasticidad, gestión emocional y hábitos para coaching de alta performance y ALIVE GAME.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

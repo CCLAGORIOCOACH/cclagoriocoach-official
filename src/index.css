@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --color-borgona: #581420;
+  --color-borgona-dark: #3F0E16;
+  --color-borgona-light: #771C2E;
+  --color-borgona-surface: #5814200D;
+  --color-dorado: #C38B3A;
+  --color-dorado-light: #E4B062;
+  --color-dorado-surface: #C38B3A18;
+  --color-oliva: #6B705C;
+  --color-oliva-light: #8B917A;
+  --color-oliva-surface: #6B705C15;
+  --color-crema: #F9F6F0;
+  --color-crema-card: #FFFFFF;
+  --color-crema-muted: #F1ECE3;
+  --color-cafe: #2B231F;
+  --color-cafe-muted: #645A54;
+
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Custom scrollbars and mobile-app native feeling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1ECE3;
+}
+::-webkit-scrollbar-thumb {
+  background: #C38B3A80;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C38B3A;
+}
+
+/* Touch feedback for mobile-first feel */
+@media (hover: none) {
+  button:active, .interactive-tap:active {
+    transform: scale(0.98);
+  }
+}
