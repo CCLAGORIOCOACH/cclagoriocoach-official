@@ -7,6 +7,7 @@ import { ClientDetailView } from './components/coach/ClientDetailView';
 import { PublicLandingDashboard } from './components/public/PublicLandingDashboard';
 import { LandingPage } from './components/public/LandingPage';
 import { NewClientModal } from './components/modals/NewClientModal';
+import { FeedbackSessionModal } from './components/modals/FeedbackSessionModal';
 import { AddSessionModal } from './components/modals/AddSessionModal';
 import { FinalizeClientModal } from './components/modals/FinalizeClientModal';
 import { CoachAuthModal } from './components/auth/CoachAuthModal';
@@ -144,15 +145,96 @@ export default function App() {
     if (!selectedClientId) return;
     const current = clients.find(c => c.id === selectedClientId);
     if (!current) return;
-    const updated = await apiService.updateClient(selectedClientId, {
-      baseline: {
+
+    const sessionNum = current.sessions.length + 1;
+    const isInitial = current.sessions.length === 0;
+
+    const newMapaSession: SessionRecord = {
+      id: `mapa-${Date.now()}`,
+      sessionNumber: sessionNum,
+      date: new Date().toISOString().split('T')[0],
+      sessionType: 'mapa_interno',
+      sessionTopic: isInitial ? 'Sesión 1: Mapa Interno Inicial (Punto de Partida)' : `Sesión ${sessionNum}: Re-Mapeo Interno`,
+      vitalDecisions: {
+        nutrition: results.sessionData?.nutrition ?? current.baseline.initialVitalDecisions.nutrition,
+        exercise: results.sessionData?.exercise ?? current.baseline.initialVitalDecisions.exercise,
+        rest: results.sessionData?.rest ?? current.baseline.initialVitalDecisions.rest,
+        overallDecisionsQuality: results.sessionData?.overallDecisionsQuality ?? 7,
+        vitalEnergyScore: Number(((
+          (results.sessionData?.nutrition ?? current.baseline.initialVitalDecisions.nutrition) +
+          (results.sessionData?.exercise ?? current.baseline.initialVitalDecisions.exercise) +
+          (results.sessionData?.rest ?? current.baseline.initialVitalDecisions.rest)
+        ) / 3).toFixed(1)),
+        decisionNotes: isInitial ? 'Punto de partida biológico consolidado' : 'Re-evaluación de hábitos biológicos',
+      },
+      emotionalManagement: {
+        predominantEmotion: results.sessionData?.predominantEmotion ?? current.baseline.initialPredominantEmotion,
+        hardestEmotionToManage: results.sessionData?.predominantEmotion ?? current.baseline.initialPredominantEmotion,
+        intensity: 6,
+        neuroplasticityToolApplied: 'Batería de creencias y anclaje somático',
+        interferedWithDecisions: 'no',
+        emotionalNotes: `Eneatipo ${results.enneatype} detectado en el Mapa Interno`,
+      },
+      lifeWheelSnapshot: results.lifeWheel,
+      empoweredBeliefsSnapshot: (() => {
+        const emp: any = {};
+        Object.entries(results.beliefs).forEach(([k, b]: [any, any]) => {
+          emp[k] = b.empoweredPercentage;
+        });
+        return emp;
+      })(),
+      coachObservations: results.sessionData?.coachObservations || 'Mapa Interno completado con cuestionario clínico interactivo.',
+      actionCommitment: results.sessionData?.actionCommitment || 'Continuar autoregistro en la app AliveGamers.',
+    };
+
+    const updatedSessions = [...current.sessions, newMapaSession];
+
+    const updatedPayload: any = {
+      sessions: updatedSessions,
+    };
+
+    if (isInitial) {
+      updatedPayload.baseline = {
         ...current.baseline,
         enneatype: results.enneatype,
         dominantDrainArea: results.dominantDrainArea,
         lifeWheel: results.lifeWheel,
         beliefs: results.beliefs,
-      },
-    });
+      };
+    } else {
+      // Re-mapping session: also update finalEvaluation so the comparative report compares initial vs final!
+      const empoweredFinal: any = {};
+      Object.entries(results.beliefs).forEach(([k, b]: [any, any]) => {
+        empoweredFinal[k] = b.empoweredPercentage;
+      });
+
+      updatedPayload.finalEvaluation = {
+        completedAt: new Date().toISOString().split('T')[0],
+        enneatypeFinal: results.enneatype,
+        lifeWheelFinal: results.lifeWheel,
+        empoweredBeliefsFinal: empoweredFinal,
+        finalVitalDecisions: {
+          nutrition: results.sessionData?.nutrition ?? 8,
+          exercise: results.sessionData?.exercise ?? 7.5,
+          rest: results.sessionData?.rest ?? 8,
+          vitalEnergyScore: Number(((
+            (results.sessionData?.nutrition ?? 8) +
+            (results.sessionData?.exercise ?? 7.5) +
+            (results.sessionData?.rest ?? 8)
+          ) / 3).toFixed(1)),
+        },
+        predominantEmotionConsolidated: 'Serenidad y autorregulación soberana',
+        keyMilestones: [
+          'Inversión comprobada de creencias limitantes en las 8 áreas.',
+          'Consolidación de hábitos en nutrición, ejercicio y descanso.',
+          'Desactivación del secuestro emocional sobre las decisiones.',
+        ],
+        preventiveBoicotProtocol: 'Ante el síntoma somático, pausar 10 minutos y registrar en AliveGamers.',
+        coachSummary: 'Re-mapeo evolutivo completado con éxito comparando punto de partida y llegada.',
+      };
+    }
+
+    const updated = await apiService.updateClient(selectedClientId, updatedPayload);
     setClients(prev => prev.map(c => (c.id === updated.id ? updated : c)));
   };
 
@@ -376,7 +458,7 @@ export default function App() {
 
       {selectedClient && (
         <>
-          <AddSessionModal
+          <FeedbackSessionModal
             isOpen={isAddSessionOpen}
             onClose={() => setIsAddSessionOpen(false)}
             client={selectedClient}

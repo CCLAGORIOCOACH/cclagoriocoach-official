@@ -26,6 +26,7 @@ import {
   Check,
   ShieldCheck,
   Compass,
+  Zap,
 } from 'lucide-react';
 
 interface InteractiveClinicalTestsModalProps {
@@ -41,6 +42,15 @@ interface InteractiveClinicalTestsModalProps {
     dominantDrainArea: LifeAreaKey;
     lifeWheel: Record<LifeAreaKey, number>;
     beliefs: Record<LifeAreaKey, AreaBelief>;
+    sessionData?: {
+      nutrition: number;
+      exercise: number;
+      rest: number;
+      overallDecisionsQuality: number;
+      predominantEmotion: string;
+      coachObservations: string;
+      actionCommitment: string;
+    };
   }) => void;
   title?: string;
   subtitle?: string;
@@ -56,9 +66,9 @@ export const InteractiveClinicalTestsModal: React.FC<InteractiveClinicalTestsMod
   initialBeliefs,
   onApplyResults,
   title = 'Batería Diagnóstica · Mapa Interno',
-  subtitle = 'Test de Eneatipos, Creencias en las 7 Áreas y Rueda de Satisfacción',
+  subtitle = 'Test de Eneatipos, Creencias en las 8 Áreas y Rueda de Satisfacción',
 }) => {
-  const [activeTab, setActiveTab] = useState<'eneatipo' | 'creencias' | 'rueda'>('eneatipo');
+  const [activeTab, setActiveTab] = useState<'eneatipo' | 'creencias' | 'rueda' | 'decisiones'>('eneatipo');
 
   // 1. ENEATIPO RESPUESTAS
   // Map of questionId -> selectedOptionIndex
@@ -81,15 +91,25 @@ export const InteractiveClinicalTestsModal: React.FC<InteractiveClinicalTestsMod
   const [wheelScores, setWheelScores] = useState<Record<LifeAreaKey, number>>(() => {
     if (initialWheel) return { ...initialWheel };
     return {
-      cuerpo_mente: 4.5,
+      cuerpo_mente: 5.0,
+      finanzas: 5.0,
       pareja: 5.0,
+      vocacion: 5.0,
+      trabajo: 5.0,
+      ocio: 4.0,
       familia: 5.0,
       amigos: 5.0,
-      trabajo_vocacion: 4.0,
-      finanzas: 5.5,
-      ocio: 3.5,
     };
   });
+
+  // 4. DECISIONES & NOTAS DE SESIÓN
+  const [nutrition, setNutrition] = useState<number>(6);
+  const [exercise, setExercise] = useState<number>(5);
+  const [rest, setRest] = useState<number>(6);
+  const [overallDecisionsQuality, setOverallDecisionsQuality] = useState<number>(6);
+  const [predominantEmotion, setPredominantEmotion] = useState<string>('Ansiedad por sobrecarga');
+  const [coachObservations, setCoachObservations] = useState<string>('');
+  const [actionCommitment, setActionCommitment] = useState<string>('Iniciar autoregistro de micro-decisiones en AliveGamers');
 
   if (!isOpen) return null;
 
@@ -190,6 +210,15 @@ _ALIVE GAME · Sanar el vínculo cuerpo-mente con decisiones conscientes._`;
       dominantDrainArea: detectedDrainArea,
       lifeWheel: wheelScores,
       beliefs: calculatedBeliefs,
+      sessionData: {
+        nutrition,
+        exercise,
+        rest,
+        overallDecisionsQuality,
+        predominantEmotion,
+        coachObservations,
+        actionCommitment,
+      },
     });
     onClose();
   };
@@ -250,7 +279,7 @@ _ALIVE GAME · Sanar el vínculo cuerpo-mente con decisiones conscientes._`;
               }`}
             >
               <Layers className="w-3.5 h-3.5 text-[#C38B3A]" />
-              <span>2. Creencias por Área (7 Áreas)</span>
+              <span>2. Creencias por Área (8 Áreas)</span>
             </button>
 
             <button
@@ -263,6 +292,18 @@ _ALIVE GAME · Sanar el vínculo cuerpo-mente con decisiones conscientes._`;
             >
               <Activity className="w-3.5 h-3.5 text-[#6B705C]" />
               <span>3. Rueda de Satisfacción Objetiva</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('decisiones')}
+              className={`px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                activeTab === 'decisiones'
+                  ? 'bg-[#581420] text-white font-bold shadow-sm'
+                  : 'text-[#6A6057] hover:text-[#2B231F]'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5 text-[#E4B062]" />
+              <span>4. Hábitos, Decisiones & Notas</span>
             </button>
           </div>
 
@@ -696,6 +737,154 @@ _ALIVE GAME · Sanar el vínculo cuerpo-mente con decisiones conscientes._`;
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* TAB 4: DECISIONES EN HÁBITOS, ENERGÍA VITAL & NOTAS */}
+          {/* ========================================================================= */}
+          {activeTab === 'decisiones' && (
+            <div className="space-y-6">
+              <div className="p-4 bg-gradient-to-r from-[#581420]/10 to-[#C38B3A]/10 border border-[#C38B3A]/30 rounded-2xl flex items-start gap-3">
+                <Zap className="w-5 h-5 text-[#581420] shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-xs font-bold text-[#581420] uppercase tracking-wider">
+                    Medición de Hábitos & Calidad de Decisiones
+                  </h4>
+                  <p className="text-xs text-[#6A6057] mt-0.5">
+                    Evalúa la calidad de decisiones en los 3 pilares biológicos (Alimentación, Ejercicio, Descanso) y la emoción predominante que acompañan este escaneo.
+                  </p>
+                </div>
+              </div>
+
+              {/* 3 Pillars */}
+              <div className="bg-white p-5 rounded-2xl border border-[#EADBCA] space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-[#F2ECE3]">
+                  <h5 className="font-serif font-bold text-sm text-[#581420]">
+                    Calificación de Decisiones (Pilares Biológicos)
+                  </h5>
+                  <div className="text-right">
+                    <span className="text-[10px] text-[#6A6057] uppercase font-bold block">
+                      Energía Vital Autogestionada (Promedio 3 Decisiones)
+                    </span>
+                    <span className="font-mono text-xs font-bold text-[#581420] bg-[#FAF7F2] px-2.5 py-1 rounded-lg border border-[#EADBCA] inline-block">
+                      ({nutrition} + {exercise} + {rest}) ÷ 3 = <strong>{Number(((nutrition + exercise + rest) / 3).toFixed(1))} / 10</strong>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-[#581420]/5 rounded-xl border border-[#581420]/15">
+                  <label className="block text-xs font-bold text-[#581420] mb-1">
+                    Calificación global de decisiones hoy:
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      step="0.5"
+                      value={overallDecisionsQuality}
+                      onChange={e => setOverallDecisionsQuality(parseFloat(e.target.value))}
+                      className="flex-1 accent-[#581420]"
+                    />
+                    <span className="font-mono text-base font-bold text-[#581420] w-12 text-right">
+                      {overallDecisionsQuality}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EADBCA] space-y-1">
+                    <div className="flex justify-between text-xs font-semibold">
+                      <span>🥗 Alimentación</span>
+                      <span className="font-mono font-bold text-[#581420]">{nutrition}/10</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      step="0.5"
+                      value={nutrition}
+                      onChange={e => setNutrition(parseFloat(e.target.value))}
+                      className="w-full accent-[#581420]"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EADBCA] space-y-1">
+                    <div className="flex justify-between text-xs font-semibold">
+                      <span>🏃 Ejercicio</span>
+                      <span className="font-mono font-bold text-[#581420]">{exercise}/10</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      step="0.5"
+                      value={exercise}
+                      onChange={e => setExercise(parseFloat(e.target.value))}
+                      className="w-full accent-[#581420]"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EADBCA] space-y-1">
+                    <div className="flex justify-between text-xs font-semibold">
+                      <span>💤 Descanso</span>
+                      <span className="font-mono font-bold text-[#581420]">{rest}/10</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      step="0.5"
+                      value={rest}
+                      onChange={e => setRest(parseFloat(e.target.value))}
+                      className="w-full accent-[#581420]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#6A6057] mb-1">
+                    Emoción Predominante de la Sesión:
+                  </label>
+                  <input
+                    type="text"
+                    value={predominantEmotion}
+                    onChange={e => setPredominantEmotion(e.target.value)}
+                    placeholder="Ej. Ansiedad por sobrecarga, Calma, Miedo..."
+                    className="w-full px-3 py-1.5 bg-[#FAF7F2] rounded-lg border border-[#DACDC0] text-xs font-medium text-[#8C3A49]"
+                  />
+                </div>
+              </div>
+
+              {/* Coach Observations & Next Task */}
+              <div className="bg-white p-5 rounded-2xl border border-[#EADBCA] space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-[#6A6057] mb-1">
+                    Compromiso / Tarea para la siguiente sesión (AliveGamers):
+                  </label>
+                  <input
+                    type="text"
+                    value={actionCommitment}
+                    onChange={e => setActionCommitment(e.target.value)}
+                    placeholder="Ej. Identificar 1 momento de impulso automático al día y registrar..."
+                    className="w-full px-3 py-1.5 bg-[#FAF7F2] rounded-lg border border-[#DACDC0] text-xs font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#6A6057] mb-1">
+                    Notas y Observaciones Clínicas del Coach (Cecilia):
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={coachObservations}
+                    onChange={e => setCoachObservations(e.target.value)}
+                    placeholder="Observaciones de encuadre, receptividad somática, patrón de autoexigencia detectado..."
+                    className="w-full px-3 py-2 bg-[#FAF7F2] rounded-xl border border-[#DACDC0] text-xs"
+                  />
+                </div>
               </div>
             </div>
           )}

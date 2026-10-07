@@ -13,6 +13,8 @@ import {
   ENNEATYPE_DECISION_QUESTIONS,
   AREA_DIAGNOSTIC_PROMPTS,
 } from '../../data/mapaInternoTest';
+import { LIFE_SATISFACTION_ITEMS } from '../../data/clinicalQuestionnaires';
+import { RadarChart } from '../charts/RadarChart';
 import {
   X,
   Play,
@@ -30,6 +32,8 @@ import {
   Clock,
   Target,
   Compass,
+  Printer,
+  FileText,
 } from 'lucide-react';
 
 interface LiveSessionGuideModalProps {
@@ -102,10 +106,41 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
   const [nextTask, setNextTask] = useState('');
 
   // --- Session 1 Questionnaire state ---
+  const [s1ConsultationReason, setS1ConsultationReason] = useState(
+    client.consultationReason || client.baseline.consultationReason || ''
+  );
+  const [s1SessionIntroduction, setS1SessionIntroduction] = useState(
+    client.baseline.sessionIntroduction || ''
+  );
+  const [s1ExpectedOutcomes, setS1ExpectedOutcomes] = useState('');
   const [enneaAnswers, setEnneaAnswers] = useState<Record<string, number>>({});
   const [enneaCalculated, setEnneaCalculated] = useState<number>(client.baseline.enneatype || 3);
-  const [s1Beliefs, setS1Beliefs] = useState<Record<LifeAreaKey, AreaBelief>>({ ...client.baseline.beliefs });
-  const [s1Wheel, setS1Wheel] = useState<Record<LifeAreaKey, number>>({ ...client.baseline.lifeWheel });
+  const [s1Beliefs, setS1Beliefs] = useState<Record<LifeAreaKey, AreaBelief>>(() => {
+    const base: Record<LifeAreaKey, AreaBelief> = { ...client.baseline.beliefs };
+    LIFE_AREAS.forEach(area => {
+      if (!base[area.key]) {
+        base[area.key] = {
+          limitingPercentage: 60,
+          empoweredPercentage: 40,
+          limitingBeliefSnippet: '',
+          empoweredBeliefSnippet: '',
+        };
+      }
+    });
+    return base;
+  });
+  const [s1Wheel, setS1Wheel] = useState<Record<LifeAreaKey, number>>(() => {
+    return {
+      cuerpo_mente: client.baseline.lifeWheel.cuerpo_mente ?? 5,
+      finanzas: client.baseline.lifeWheel.finanzas ?? 5,
+      pareja: client.baseline.lifeWheel.pareja ?? 5,
+      vocacion: client.baseline.lifeWheel.vocacion ?? 5,
+      trabajo: client.baseline.lifeWheel.trabajo ?? 5,
+      ocio: client.baseline.lifeWheel.ocio ?? 4,
+      familia: client.baseline.lifeWheel.familia ?? 5,
+      amigos: client.baseline.lifeWheel.amigos ?? 5,
+    };
+  });
   const [s1DrainArea, setS1DrainArea] = useState<LifeAreaKey>(client.baseline.dominantDrainArea || 'cuerpo_mente');
   const [s1MotherWords, setS1MotherWords] = useState<[string, string, string]>(
     client.baseline.childhoodStimuli.find(s => s.figure === 'madre')?.words || ['Exigente', 'Amorosa', 'Presente']
@@ -277,6 +312,8 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
     // If session 1, update baseline too
     if (isSessionOne && onSaveBaselineUpdate) {
       onSaveBaselineUpdate({
+        consultationReason: s1ConsultationReason,
+        sessionIntroduction: s1SessionIntroduction,
         enneatype: enneaCalculated,
         lifeWheel: s1Wheel,
         beliefs: s1Beliefs,
@@ -391,22 +428,54 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
               </button>
             </div>
           ) : isSessionOne ? (
-            <div className="flex items-center gap-2 font-medium">
-              <span className={`px-2.5 py-1 rounded-md ${step === 1 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057]'}`}>
-                1. Test Eneatipo
-              </span>
+            <div className="flex items-center gap-1.5 font-medium overflow-x-auto py-0.5">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className={`px-2 py-1 rounded-md text-[11px] whitespace-nowrap transition-colors ${step === 1 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057] hover:text-[#2B231F]'}`}
+              >
+                1. Motivo & Intro
+              </button>
               <span>/</span>
-              <span className={`px-2.5 py-1 rounded-md ${step === 2 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057]'}`}>
-                2. Creencias 7 Áreas
-              </span>
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className={`px-2 py-1 rounded-md text-[11px] whitespace-nowrap transition-colors ${step === 2 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057] hover:text-[#2B231F]'}`}
+              >
+                2. Test Eneatipo
+              </button>
               <span>/</span>
-              <span className={`px-2.5 py-1 rounded-md ${step === 3 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057]'}`}>
-                3. Rueda & Niñez
-              </span>
+              <button
+                type="button"
+                onClick={() => setStep(3)}
+                className={`px-2 py-1 rounded-md text-[11px] whitespace-nowrap transition-colors ${step === 3 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057] hover:text-[#2B231F]'}`}
+              >
+                3. Creencias 8 Áreas
+              </button>
               <span>/</span>
-              <span className={`px-2.5 py-1 rounded-md ${step === 4 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057]'}`}>
-                4. Decisiones & Tarea S2
-              </span>
+              <button
+                type="button"
+                onClick={() => setStep(4)}
+                className={`px-2 py-1 rounded-md text-[11px] whitespace-nowrap transition-colors ${step === 4 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057] hover:text-[#2B231F]'}`}
+              >
+                4. Rueda Satisfacción
+              </button>
+              <span>/</span>
+              <button
+                type="button"
+                onClick={() => setStep(5)}
+                className={`px-2 py-1 rounded-md text-[11px] whitespace-nowrap transition-colors ${step === 5 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057] hover:text-[#2B231F]'}`}
+              >
+                5. Decisiones & Emoción
+              </button>
+              <span>/</span>
+              <button
+                type="button"
+                onClick={() => setStep(6)}
+                className={`px-2 py-1 rounded-md text-[11px] whitespace-nowrap transition-colors ${step === 6 ? 'bg-[#581420] text-white font-bold' : 'text-[#6A6057] hover:text-[#2B231F]'}`}
+              >
+                6. Mapa Interno & Tarea S2
+              </button>
             </div>
           ) : (
             <div className="flex items-center gap-2 font-medium">
@@ -793,18 +862,76 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
           )}
 
           {/* ========================================================================= */}
-          {/* FLOW A: SESIÓN 1 (MAPA INTERNO COMPLETO) */}
+          {/* FLOW A: SESIÓN 1 (MAPA INTERNO COMPLETO · HOJA DE RUTA CLINICA) */}
           {/* ========================================================================= */}
           {isSessionOne && (
             <>
-              {/* Step 1: Eneagrama guiado */}
+              {/* Step 1: Introducción & Motivo de Consulta */}
               {step === 1 && (
+                <div className="space-y-5">
+                  <div className="p-4 bg-gradient-to-r from-[#581420]/10 via-[#C38B3A]/10 to-transparent border border-[#C38B3A]/30 rounded-2xl flex items-start gap-3">
+                    <FileText className="w-5 h-5 text-[#581420] shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-xs font-bold text-[#581420] uppercase tracking-wider">
+                        Fase 1: Introducción, Encuadre & Motivo de Consulta
+                      </h4>
+                      <p className="text-xs text-[#6A6057] mt-0.5">
+                        Explora la situación que trae a la persona a consulta, sus expectativas de transformación y realiza el encuadre del proceso de neurocoaching.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-5 rounded-2xl border border-[#EADBCA] space-y-4 shadow-sm">
+                    <div>
+                      <label className="block text-xs font-bold text-[#581420] mb-1">
+                        1. Motivo de Consulta Principal *
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={s1ConsultationReason}
+                        onChange={e => setS1ConsultationReason(e.target.value)}
+                        placeholder="¿Qué situación puntual, síntoma somático, sobrecarga o quiebre trae al paciente hoy? (ej. fatiga crónica, crisis vocacional, problemas para poner límites, insomnio por rumiación...)"
+                        className="w-full p-3 bg-[#FAF7F2] rounded-xl border border-[#DACDC0] text-xs font-medium focus:border-[#581420] outline-none leading-relaxed"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#581420] mb-1">
+                        2. ¿Qué Espera Transformar al Finalizar las Sesiones Contratadas?
+                      </label>
+                      <input
+                        type="text"
+                        value={s1ExpectedOutcomes}
+                        onChange={e => setS1ExpectedOutcomes(e.target.value)}
+                        placeholder="Ej. Poder decir que no sin culpa, recuperar mi descanso reparador y definir mi rumbo vocacional..."
+                        className="w-full px-3.5 py-2.5 bg-[#FAF7F2] rounded-xl border border-[#DACDC0] text-xs focus:border-[#581420] outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#581420] mb-1">
+                        3. Notas de Encuadre & Rapport Clínico de la Coach
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={s1SessionIntroduction}
+                        onChange={e => setS1SessionIntroduction(e.target.value)}
+                        placeholder="Observaciones de apertura: disposición corporal, tono de voz, nivel de receptividad y acuerdo de confidencialidad..."
+                        className="w-full p-3 bg-[#FAF7F2] rounded-xl border border-[#DACDC0] text-xs focus:border-[#581420] outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 2: Test de Eneatipos */}
+              {step === 2 && (
                 <div className="space-y-5">
                   <div className="p-3.5 bg-[#C38B3A]/10 border border-[#C38B3A]/30 rounded-xl text-xs text-[#581420] flex items-start gap-2.5">
                     <Brain className="w-4 h-4 text-[#C38B3A] shrink-0 mt-0.5" />
                     <div>
-                      <strong className="block font-bold">Guión del Coach para el Mapa Interno:</strong>
-                      Pregúntale al cliente cada reactivo para descubrir el eneatipo mediante el cual está decidiendo en este momento y su centro de boicot biológico.
+                      <strong className="block font-bold">Fase 2: Test de Eneatipos & Herida Decisional:</strong>
+                      Pregúntale al cliente cada reactivo para descubrir el eneatipo mediante el cual está decidiendo en este momento y su centro de boicot somático.
                     </div>
                   </div>
 
@@ -874,12 +1001,12 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
                 </div>
               )}
 
-              {/* Step 2: Creencias en las 7 áreas */}
-              {step === 2 && (
+              {/* Step 3: Escaneo de Creencias Limitantes vs Empoderadas (8 Áreas de Vida) */}
+              {step === 3 && (
                 <div className="space-y-4">
                   <div className="p-3.5 bg-[#C38B3A]/10 border border-[#C38B3A]/30 rounded-xl text-xs text-[#581420]">
-                    <strong>Preguntas Diagnósticas por Área de Vida:</strong>
-                    Hazle estas preguntas al cliente para definir el porcentaje de creencias limitantes vs empoderadas que habitan en cada área.
+                    <strong>Fase 3: Escaneo de Creencias (Limitantes vs Empoderadas por Área de Vida):</strong>
+                    Calibra con el cliente el porcentaje de creencias limitantes vs empoderadas en cada una de las 8 áreas clave.
                   </div>
 
                   <div className="space-y-3">
@@ -891,11 +1018,13 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
                         empoweredBeliefSnippet: item.empoweredExample,
                       };
 
+                      const areaConfig = LIFE_AREAS.find(a => a.key === item.areaKey);
+
                       return (
-                        <div key={item.areaKey} className="p-4 bg-white rounded-xl border border-[#EADBCA] space-y-2">
+                        <div key={item.areaKey} className="p-4 bg-white rounded-2xl border border-[#EADBCA] space-y-3 shadow-2xs">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="font-serif font-bold text-[#581420]">
-                              {LIFE_AREAS.find(a => a.key === item.areaKey)?.label}
+                            <span className="font-serif font-bold text-[#581420] text-sm">
+                              {areaConfig?.label || item.areaKey}
                             </span>
                             <div className="flex items-center gap-3 font-mono text-[11px]">
                               <span className="text-[#8C3A49] font-bold">Limitante: {b.limitingPercentage}%</span>
@@ -904,7 +1033,7 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
                           </div>
 
                           <p className="text-xs text-[#4A413B] italic">
-                            Pregunta: "{item.question}"
+                            Pregunta guía: "{item.question}"
                           </p>
 
                           <input
@@ -927,9 +1056,39 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
                             className="w-full accent-[#8C3A49]"
                           />
 
-                          <div className="grid grid-cols-2 gap-2 text-[10px] text-[#6A6057]">
-                            <span>Ej. Limitante: "{item.limitingExample}"</span>
-                            <span className="text-right">Ej. Empoderada: "{item.empoweredExample}"</span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <span className="text-[10px] text-[#8C3A49] font-bold block mb-0.5">Creencia Limitante Detectada:</span>
+                              <input
+                                type="text"
+                                value={b.limitingBeliefSnippet}
+                                onChange={e => {
+                                  const val = e.target.value;
+                                  setS1Beliefs(prev => ({
+                                    ...prev,
+                                    [item.areaKey]: { ...prev[item.areaKey], limitingBeliefSnippet: val },
+                                  }));
+                                }}
+                                placeholder={item.limitingExample}
+                                className="w-full px-2.5 py-1.5 bg-[#FAF7F2] rounded-lg border border-[#EADBCA] text-xs text-[#4A413B]"
+                              />
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-[#6B705C] font-bold block mb-0.5">Creencia Empoderada a Instalar:</span>
+                              <input
+                                type="text"
+                                value={b.empoweredBeliefSnippet}
+                                onChange={e => {
+                                  const val = e.target.value;
+                                  setS1Beliefs(prev => ({
+                                    ...prev,
+                                    [item.areaKey]: { ...prev[item.areaKey], empoweredBeliefSnippet: val },
+                                  }));
+                                }}
+                                placeholder={item.empoweredExample}
+                                className="w-full px-2.5 py-1.5 bg-[#FAF7F2] rounded-lg border border-[#EADBCA] text-xs text-[#4A413B]"
+                              />
+                            </div>
                           </div>
                         </div>
                       );
@@ -938,49 +1097,68 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
                 </div>
               )}
 
-              {/* Step 3: Rueda de la vida & Estímulos de niñez */}
-              {step === 3 && (
+              {/* Step 4: Cuestionario de Niveles de Satisfacción Actual (8 Áreas de Vida) */}
+              {step === 4 && (
                 <div className="space-y-5">
-                  <div className="p-4 bg-white rounded-xl border border-[#EADBCA] space-y-3">
+                  <div className="p-4 bg-white rounded-2xl border border-[#EADBCA] space-y-3 shadow-sm">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-[#581420]">
-                      Rueda de la Vida (Satisfacción Actual 1 a 10)
+                      Fase 4: Cuestionario de Niveles de Satisfacción Actual (Rueda de la Vida - 8 Áreas)
                     </h4>
                     <p className="text-xs text-[#6A6057]">
-                      Pídele que califique del 1 al 10 su nivel de satisfacción actual en cada área:
+                      Pídele al paciente que califique del 1 al 10 su nivel de satisfacción actual en las mismas 8 áreas de vida:
                     </p>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {LIFE_AREAS.map(a => (
-                        <div key={a.key} className="flex items-center justify-between p-2.5 bg-[#FAF7F2] rounded-xl border border-[#EADBCA] text-xs">
-                          <span className="font-semibold text-[#2B231F]">{a.shortLabel}</span>
-                          <div className="flex items-center gap-2">
+                    <div className="space-y-3 pt-2">
+                      {LIFE_SATISFACTION_ITEMS.map(item => {
+                        const curVal = s1Wheel[item.areaKey] ?? 5;
+                        return (
+                          <div
+                            key={item.areaKey}
+                            className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EADBCA] text-xs space-y-2"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-[#581420] text-sm">{item.label}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-sm font-bold text-[#581420] bg-white px-2 py-0.5 rounded border border-[#EADBCA]">
+                                  {curVal} / 10
+                                </span>
+                              </div>
+                            </div>
+
+                            <p className="text-[11px] text-[#4A413B] italic">
+                              "{item.diagnosticQuestion}"
+                            </p>
+
                             <input
                               type="range"
                               min="1"
                               max="10"
                               step="0.5"
-                              value={s1Wheel[a.key]}
+                              value={curVal}
                               onChange={e =>
-                                setS1Wheel(prev => ({ ...prev, [a.key]: parseFloat(e.target.value) }))
+                                setS1Wheel(prev => ({ ...prev, [item.areaKey]: parseFloat(e.target.value) }))
                               }
-                              className="w-24 accent-[#581420]"
+                              className="w-full accent-[#581420]"
                             />
-                            <span className="font-mono font-bold text-[#581420] w-6 text-right">
-                              {s1Wheel[a.key]}
-                            </span>
+
+                            <div className="grid grid-cols-3 gap-1 text-[10px] text-[#6A6057]">
+                              <span>Bajo: {item.lowScoreAnchor}</span>
+                              <span className="text-center">Medio: {item.mediumScoreAnchor}</span>
+                              <span className="text-right">Alto: {item.highScoreAnchor}</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
-                    <div className="pt-2">
-                      <label className="block text-xs font-semibold text-[#581420] mb-1">
-                        ¿Qué área le está drenando más energía en este momento? *
+                    <div className="pt-3 border-t border-[#EADBCA]">
+                      <label className="block text-xs font-bold text-[#581420] mb-1">
+                        ¿Qué área le está drenando más energía en este momento? (Foco de Quiebre Inicial) *
                       </label>
                       <select
                         value={s1DrainArea}
                         onChange={e => setS1DrainArea(e.target.value as any)}
-                        className="w-full px-3 py-2 bg-[#FAF7F2] rounded-lg border border-[#DACDC0] text-xs font-bold text-[#581420]"
+                        className="w-full px-3 py-2 bg-[#FAF7F2] rounded-xl border border-[#DACDC0] text-xs font-bold text-[#581420]"
                       >
                         {LIFE_AREAS.map(a => (
                           <option key={a.key} value={a.key}>
@@ -990,20 +1168,186 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
                       </select>
                     </div>
                   </div>
+                </div>
+              )}
 
-                  {/* Niñez */}
-                  <div className="p-4 bg-white rounded-xl border border-[#EADBCA] space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#581420]">
-                      Mapa de Estímulos de la Infancia (3 palabras por figura)
-                    </h4>
+              {/* Step 5: Calidad de Decisiones Vitales & Emoción Predominante */}
+              {step === 5 && (
+                <div className="space-y-4">
+                  <div className="p-4 bg-white rounded-2xl border border-[#EADBCA] space-y-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[#581420]">
+                        Fase 5: Medición de Decisiones Vitales & Emoción Predominante
+                      </h4>
+                      <span className="text-sm font-mono font-bold text-[#581420] bg-[#FAF7F2] px-3 py-1 rounded-lg border border-[#EADBCA]">
+                        Energía Vital de Partida: {Number(((nutrition + exercise + rest) / 3).toFixed(1))} / 10
+                      </span>
+                    </div>
                     <p className="text-xs text-[#6A6057]">
-                      "Define en 3 palabras a las personas que más influyeron en ti cuando eras niño/a":
+                      En todas las sesiones se mide la calidad de las decisiones con respecto a alimentación, ejercicio físico y descanso, y la emoción que predomina:
                     </p>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EADBCA]">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-bold text-[#581420]">🥗 Alimentación</span>
+                          <span className="font-mono text-xs font-bold text-[#581420]">{nutrition}/10</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          step="0.5"
+                          value={nutrition}
+                          onChange={e => setNutrition(parseFloat(e.target.value))}
+                          className="w-full accent-[#581420]"
+                        />
+                        <span className="text-[10px] text-[#6A6057] block mt-1">Calidad nutricional e hidratación</span>
+                      </div>
+
+                      <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EADBCA]">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-bold text-[#581420]">🏃 Ejercicio Físico</span>
+                          <span className="font-mono text-xs font-bold text-[#581420]">{exercise}/10</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          step="0.5"
+                          value={exercise}
+                          onChange={e => setExercise(parseFloat(e.target.value))}
+                          className="w-full accent-[#581420]"
+                        />
+                        <span className="text-[10px] text-[#6A6057] block mt-1">Movimiento y tono muscular</span>
+                      </div>
+
+                      <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EADBCA]">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-bold text-[#581420]">💤 Descanso</span>
+                          <span className="font-mono text-xs font-bold text-[#581420]">{rest}/10</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          step="0.5"
+                          value={rest}
+                          onChange={e => setRest(parseFloat(e.target.value))}
+                          className="w-full accent-[#581420]"
+                        />
+                        <span className="text-[10px] text-[#6A6057] block mt-1">Sueño y desconexión mental</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-bold text-[#581420]">
+                          Calidad Global de las Decisiones al Llegar a Sesión 1:
+                        </label>
+                        <span className="font-mono font-bold text-xs text-[#581420]">{overallDecisionsQuality}/10</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        step="0.5"
+                        value={overallDecisionsQuality}
+                        onChange={e => setOverallDecisionsQuality(parseFloat(e.target.value))}
+                        className="w-full accent-[#581420]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                       <div>
-                        <span className="text-xs font-semibold text-[#C38B3A] block mb-1">Madre</span>
-                        <div className="grid grid-cols-3 gap-1.5">
+                        <label className="block text-xs font-bold text-[#581420] mb-1">
+                          Emoción que Predomina en la Sesión *
+                        </label>
+                        <input
+                          type="text"
+                          value={hardestEmotion}
+                          onChange={e => setHardestEmotion(e.target.value)}
+                          placeholder="Ej. Ansiedad por sobrecarga, Miedo a fallar, Agotamiento..."
+                          className="w-full px-3 py-2 bg-[#FAF7F2] rounded-xl border border-[#DACDC0] text-xs font-medium focus:border-[#581420] outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-[#581420] mb-1">
+                          Intensidad Emocional & Somática (1 al 10)
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="range"
+                            min="1"
+                            max="10"
+                            value={emotionIntensity}
+                            onChange={e => setEmotionIntensity(parseInt(e.target.value))}
+                            className="w-full accent-[#8C3A49]"
+                          />
+                          <span className="font-mono font-bold text-xs text-[#8C3A49] w-6 text-right">
+                            {emotionIntensity}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 6: Consolidación del Mapa Interno Inicial & Compromiso para Sesión 2 */}
+              {step === 6 && (
+                <div className="space-y-5">
+                  <div className="p-4 bg-[#FAF7F2] border border-[#EADBCA] rounded-2xl space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#C38B3A]">
+                        Fase 6: Consolidación del Mapa Interno Inicial
+                      </span>
+                      <span className="text-xs font-bold text-[#581420] bg-white px-2.5 py-0.5 rounded border border-[#EADBCA]">
+                        Punto de Partida Emocional
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                      <div className="flex flex-col items-center justify-center p-2 bg-white rounded-2xl border border-[#EADBCA]">
+                        <span className="text-[11px] font-serif font-bold text-[#581420] mb-1">
+                          Rueda de la Vida Inicial (8 Áreas)
+                        </span>
+                        <RadarChart initialData={s1Wheel} size={220} showLegend={false} />
+                      </div>
+
+                      <div className="space-y-2 text-xs">
+                        <div className="p-2.5 bg-white rounded-xl border border-[#EADBCA]">
+                          <span className="text-[10px] text-[#6A6057] uppercase font-bold block">Eneatipo & Herida Raíz:</span>
+                          <strong className="text-sm font-serif text-[#581420]">Eneatipo {enneaCalculated}</strong>
+                        </div>
+
+                        <div className="p-2.5 bg-white rounded-xl border border-[#EADBCA]">
+                          <span className="text-[10px] text-[#6A6057] uppercase font-bold block">Foco de Mayor Drenaje:</span>
+                          <strong className="text-xs text-[#8C3A49]">
+                            {LIFE_AREAS.find(a => a.key === s1DrainArea)?.label}
+                          </strong>
+                        </div>
+
+                        <div className="p-2.5 bg-white rounded-xl border border-[#EADBCA]">
+                          <span className="text-[10px] text-[#6A6057] uppercase font-bold block">Energía Vital Inicial:</span>
+                          <strong className="text-xs text-[#581420]">
+                            {Number(((nutrition + exercise + rest) / 3).toFixed(1))} / 10
+                          </strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Estímulos de Niñez */}
+                  <div className="p-4 bg-white rounded-2xl border border-[#EADBCA] space-y-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#581420] block">
+                      Estímulos de la Infancia (3 palabras por figura)
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <span className="text-[11px] font-semibold text-[#C38B3A] block mb-1">Madre:</span>
+                        <div className="grid grid-cols-3 gap-1">
                           <input
                             type="text"
                             value={s1MotherWords[0]}
@@ -1024,10 +1368,9 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
                           />
                         </div>
                       </div>
-
                       <div>
-                        <span className="text-xs font-semibold text-[#C38B3A] block mb-1">Padre</span>
-                        <div className="grid grid-cols-3 gap-1.5">
+                        <span className="text-[11px] font-semibold text-[#C38B3A] block mb-1">Padre:</span>
+                        <div className="grid grid-cols-3 gap-1">
                           <input
                             type="text"
                             value={s1FatherWords[0]}
@@ -1050,88 +1393,23 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* Step 4: Decisiones iniciales & Tarea para Sesión 2 */}
-              {step === 4 && (
-                <div className="space-y-4">
-                  <div className="p-4 bg-white rounded-xl border border-[#EADBCA] space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#581420]">
-                      Decisiones Iniciales (Punto de Partida)
-                    </h4>
-
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="p-2 bg-[#FAF7F2] rounded-lg">
-                        <span className="text-[11px] block font-semibold">🥗 Alimentación</span>
-                        <input
-                          type="range"
-                          min="1"
-                          max="10"
-                          value={nutrition}
-                          onChange={e => setNutrition(parseFloat(e.target.value))}
-                          className="w-full accent-[#581420]"
-                        />
-                        <span className="font-mono text-xs font-bold text-[#581420]">{nutrition}/10</span>
-                      </div>
-
-                      <div className="p-2 bg-[#FAF7F2] rounded-lg">
-                        <span className="text-[11px] block font-semibold">🏃 Ejercicio</span>
-                        <input
-                          type="range"
-                          min="1"
-                          max="10"
-                          value={exercise}
-                          onChange={e => setExercise(parseFloat(e.target.value))}
-                          className="w-full accent-[#581420]"
-                        />
-                        <span className="font-mono text-xs font-bold text-[#581420]">{exercise}/10</span>
-                      </div>
-
-                      <div className="p-2 bg-[#FAF7F2] rounded-lg">
-                        <span className="text-[11px] block font-semibold">💤 Descanso</span>
-                        <input
-                          type="range"
-                          min="1"
-                          max="10"
-                          value={rest}
-                          onChange={e => setRest(parseFloat(e.target.value))}
-                          className="w-full accent-[#581420]"
-                        />
-                        <span className="font-mono text-xs font-bold text-[#581420]">{rest}/10</span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-[#6A6057] mb-1">
-                        Emoción Predominante de Inicio
-                      </label>
-                      <input
-                        type="text"
-                        value={hardestEmotion}
-                        onChange={e => setHardestEmotion(e.target.value)}
-                        placeholder="Ej. Ansiedad por autoexigencia, Culpa al poner límites, Miedo al rechazo..."
-                        className="w-full px-3 py-2 bg-[#FAF7F2] rounded-lg border border-[#DACDC0] text-xs font-medium"
-                      />
-                    </div>
-                  </div>
 
                   {/* Establecimiento de Tarea para Sesión 2 */}
-                  <div className="p-4 bg-[#581420]/5 border-2 border-[#581420]/30 rounded-xl space-y-2">
+                  <div className="p-4 bg-[#581420]/5 border-2 border-[#581420]/30 rounded-2xl space-y-2">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-[#581420] flex items-center gap-1.5">
                       <Sparkles className="w-4 h-4 text-[#C38B3A]" />
-                      Compromiso / Tarea Establecida para la Sesión 2 *
+                      Registro Entre Sesión y Sesión · Compromiso para la Sesión 2 *
                     </h4>
                     <p className="text-xs text-[#6A6057]">
-                      Al finalizar esta Sesión 1 de coaching, establece con el cliente la tarea de neuroplasticidad a sostener con la app AliveGamers:
+                      Fija con el paciente la tarea de neuroplasticidad para sostener y registrar en la app AliveGamers hasta la siguiente sesión:
                     </p>
                     <textarea
                       rows={2}
                       required
                       value={s1TaskForS2}
                       onChange={e => setS1TaskForS2(e.target.value)}
-                      placeholder="Ej. Registrar 1 emoción difícil al día en AliveGamers antes de cenar..."
-                      className="w-full px-3 py-2 bg-white rounded-lg border border-[#DACDC0] text-xs font-medium"
+                      placeholder="Ej. Identificar 1 momento de impulso automático al día y registrar en AliveGamers antes de cenar..."
+                      className="w-full px-3 py-2 bg-white rounded-xl border border-[#DACDC0] text-xs font-medium"
                     />
                   </div>
                 </div>
@@ -1585,7 +1863,7 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
             </button>
 
             {/* Next step vs Finish */}
-            {(isTransformational && step < 3) || (isSessionOne && step < 4) || (!isTransformational && !isSessionOne && !isFinalSession && step < 4) || (!isTransformational && !isSessionOne && isFinalSession && step < 5) ? (
+            {(isTransformational && step < 3) || (isSessionOne && step < 6) || (!isTransformational && !isSessionOne && !isFinalSession && step < 4) || (!isTransformational && !isSessionOne && isFinalSession && step < 5) ? (
               <button
                 type="button"
                 onClick={() => setStep(step + 1)}
@@ -1595,18 +1873,35 @@ export const LiveSessionGuideModal: React.FC<LiveSessionGuideModalProps> = ({
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             ) : (
-              <button
-                type="button"
-                onClick={handleFinishSession}
-                className="px-6 py-2.5 bg-[#C38B3A] hover:bg-[#D49C4B] text-[#2B231F] text-xs font-bold rounded-xl transition-all shadow-lg flex items-center gap-1.5 active:scale-95"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                <span>
-                  {isTransformational
-                    ? 'Finalizar y Generar Informe de Devolución (75 min)'
-                    : `Guardar Sesión ${targetSessionNumber} & Analizar Resultados`}
-                </span>
-              </button>
+              <div className="flex items-center gap-2">
+                {isFinalSession && (
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="px-4 py-2.5 bg-white border border-[#DACDC0] text-[#581420] hover:bg-[#FAF7F2] text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                    title="Imprimir informe final evolutivo para entregar al paciente"
+                  >
+                    <Printer className="w-4 h-4 text-[#C38B3A]" />
+                    <span>Imprimir Informe</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={handleFinishSession}
+                  className="px-6 py-2.5 bg-[#C38B3A] hover:bg-[#D49C4B] text-[#2B231F] text-xs font-bold rounded-xl transition-all shadow-lg flex items-center gap-1.5 active:scale-95"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>
+                    {isTransformational
+                      ? 'Finalizar y Generar Informe de Devolución (75 min)'
+                      : isSessionOne
+                      ? 'Guardar Sesión 1 & Consolidar Mapa Interno'
+                      : isFinalSession
+                      ? `Finalizar Proceso & Cerrar Sesión ${targetSessionNumber}`
+                      : `Guardar Sesión ${targetSessionNumber} & Registrar Avance`}
+                  </span>
+                </button>
+              </div>
             )}
           </div>
         </div>

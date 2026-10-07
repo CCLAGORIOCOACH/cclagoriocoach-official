@@ -12,7 +12,6 @@ import {
   XCircle,
   ArrowRight,
   ExternalLink,
-  Lock,
   ChevronDown,
   MessageCircle,
   Play,
@@ -21,7 +20,7 @@ import {
 
 interface LandingPageProps {
   metrics: PublicAggregatedMetrics;
-  onGoToAdmin: () => void;
+  onGoToAdmin?: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }) => {
@@ -45,7 +44,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
       <header className="sticky top-0 z-40 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#E6DFD3] px-4 sm:px-8 py-3.5">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#581420] text-[#E4B062] flex items-center justify-center font-serif font-bold text-xl shadow-sm border border-[#C38B3A]/30">
+            <div
+              onClick={onGoToAdmin}
+              className="w-10 h-10 rounded-2xl bg-[#581420] text-[#E4B062] flex items-center justify-center font-serif font-bold text-xl shadow-sm border border-[#C38B3A]/30 cursor-pointer select-none"
+              title="cclagoriocoach.com/admin"
+            >
               C
             </div>
             <div>
@@ -81,16 +84,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
           </nav>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={onGoToAdmin}
-              className="px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#DACDC0] bg-[#FAF7F2] hover:bg-[#EFE8DE] text-[#581420] text-xs font-semibold transition-all flex items-center gap-1.5 shadow-2xs"
-              title="Panel privado del coach: cclagoriocoach.com/admin"
-            >
-              <Lock className="w-3.5 h-3.5 text-[#C38B3A]" />
-              <span className="hidden sm:inline">Panel Coach</span>
-              <span className="font-mono text-[10px] text-[#8C8176]">/admin</span>
-            </button>
-
             <a
               href={WHATSAPP_URL}
               target="_blank"
@@ -1025,7 +1018,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
       <footer className="py-8 px-4 sm:px-8 bg-[#FDFBF7] text-xs text-[#8C8176]">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            © 2026 Cecilia Lagorio · cclagoriocoach.com ·{' '}
+            <span
+              onClick={onGoToAdmin}
+              className="cursor-pointer select-none hover:text-[#581420] transition-colors"
+              title="cclagoriocoach.com/admin"
+            >
+              © 2026 Cecilia Lagorio
+            </span>{' '}
+            · cclagoriocoach.com ·{' '}
             <a href="https://alivegamers.com" className="hover:underline">
               alivegamers.com
             </a>{' '}
@@ -1044,14 +1044,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={onGoToAdmin}
-              className="text-[#581420] hover:underline font-bold flex items-center gap-1"
-              title="Acceso exclusivo del coach al historial de pacientes"
-            >
-              <Lock className="w-3 h-3 text-[#C38B3A]" />
-              <span>Acceso Coach (/admin)</span>
-            </button>
+            <span className="text-[#8C8176] text-[11px]">
+              Neurocoaching & Gestión Emocional
+            </span>
           </div>
         </div>
       </footer>

@@ -1,11 +1,12 @@
 export type LifeAreaKey =
   | 'cuerpo_mente'
-  | 'pareja'
-  | 'familia'
-  | 'amigos'
-  | 'trabajo_vocacion'
   | 'finanzas'
-  | 'ocio';
+  | 'pareja'
+  | 'vocacion'
+  | 'trabajo'
+  | 'ocio'
+  | 'familia'
+  | 'amigos';
 
 export interface LifeAreaConfig {
   key: LifeAreaKey;
@@ -24,46 +25,53 @@ export const LIFE_AREAS: LifeAreaConfig[] = [
     iconName: 'Activity',
   },
   {
+    key: 'finanzas',
+    label: 'Vínculo con Finanzas',
+    shortLabel: 'Finanzas',
+    description: 'Relación con el dinero, seguridad material y toma de decisiones económicas.',
+    iconName: 'Coins',
+  },
+  {
     key: 'pareja',
-    label: 'Pareja o Vida Amorosa',
-    shortLabel: 'Amor / Pareja',
-    description: 'Vínculo afectivo íntimo, comunicación y disponibilidad emocional.',
+    label: 'Vínculo de Pareja o Vida Afectiva',
+    shortLabel: 'Pareja / Afectiva',
+    description: 'Vínculo íntimo afectivo, comunicación y disponibilidad emocional.',
     iconName: 'Heart',
   },
   {
+    key: 'vocacion',
+    label: 'Vínculo con Vocación',
+    shortLabel: 'Vocación',
+    description: 'Propósito profundo, dones personales y sentido trascendente de vida.',
+    iconName: 'Compass',
+  },
+  {
+    key: 'trabajo',
+    label: 'Vínculo con Trabajo',
+    shortLabel: 'Trabajo',
+    description: 'Actividad laboral cotidiana, clima y desenvolvimiento profesional.',
+    iconName: 'Briefcase',
+  },
+  {
+    key: 'ocio',
+    label: 'Vínculo con Ocio y Recreación',
+    shortLabel: 'Ocio / Goce',
+    description: 'Espacio para desconectar, disfrute sin culpa y regeneración creativa.',
+    iconName: 'Sparkles',
+  },
+  {
     key: 'familia',
-    label: 'Familia Primaria y Secundaria',
+    label: 'Vínculo con Familia',
     shortLabel: 'Familia',
     description: 'Lazos de origen, mandatos heredados y vínculos familiares.',
     iconName: 'Users',
   },
   {
     key: 'amigos',
-    label: 'Amigos y Vida Social',
-    shortLabel: 'Amistades',
+    label: 'Vínculo con Amigos y Vida Social',
+    shortLabel: 'Amigos / Social',
     description: 'Red de apoyo, pertenencia y vínculos sociales nutritivos.',
     iconName: 'UserCheck',
-  },
-  {
-    key: 'trabajo_vocacion',
-    label: 'Trabajo y/o Vocación',
-    shortLabel: 'Trabajo/Vocación',
-    description: 'Alineación entre el quehacer diario y el propósito vocacional profundo.',
-    iconName: 'Briefcase',
-  },
-  {
-    key: 'finanzas',
-    label: 'Finanzas Personales',
-    shortLabel: 'Finanzas',
-    description: 'Relación con el dinero, seguridad material y toma de decisiones económicas.',
-    iconName: 'Coins',
-  },
-  {
-    key: 'ocio',
-    label: 'Ocio y Tiempo Libre',
-    shortLabel: 'Ocio / Goce',
-    description: 'Espacio para desconectar, disfrute sin culpa y regeneración creativa.',
-    iconName: 'Sparkles',
   },
 ];
 
@@ -233,6 +241,8 @@ export interface TaskFeedback {
 }
 
 export interface InitialBaseline {
+  consultationReason?: string; // Motivo de consulta principal explorado en Sesión 1
+  sessionIntroduction?: string; // Introducción y encuadre clínico
   enneatype: number; // 1 - 9
   enneatypeWing?: string;
   enneatypeTestAnswers?: Record<string, any>;
@@ -259,6 +269,8 @@ export interface SessionRecord {
   id: string;
   sessionNumber: number;
   date: string;
+  sessionType?: 'mapa_interno' | 'feedback'; // Tipo de sesión: Mapa Interno (anclaje/re-mapeo) o Feedback
+  sessionTopic?: string; // Tema que trae por sesión el cliente
   previousTaskFeedback?: TaskFeedback; // Feedback de la tarea de la sesión anterior
   vitalDecisions: {
     nutrition: number; // 1 - 10
@@ -345,6 +357,7 @@ export interface ClientRecord {
   clientName: string; // PRIVATE: only seen in coach private dashboard
   contactEmail: string; // PRIVATE
   contactPhone: string; // PRIVATE
+  consultationReason?: string; // Motivo de consulta introducido al alta
   programType?: ProgramType;
   totalSessionsPlanned: 1 | 6 | 10;
   startDate: string;

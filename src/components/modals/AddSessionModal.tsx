@@ -48,6 +48,7 @@ export const AddSessionModal: React.FC<AddSessionModalProps> = ({
   const [sessionDate, setSessionDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Decisions
+  const [overallDecisionsQuality, setOverallDecisionsQuality] = useState<number>(prevSession?.vitalDecisions.overallDecisionsQuality ?? 7);
   const [nutrition, setNutrition] = useState(prevSession ? prevSession.vitalDecisions.nutrition : 5);
   const [exercise, setExercise] = useState(prevSession ? prevSession.vitalDecisions.exercise : 4);
   const [rest, setRest] = useState(prevSession ? prevSession.vitalDecisions.rest : 5);
@@ -55,6 +56,7 @@ export const AddSessionModal: React.FC<AddSessionModalProps> = ({
 
   // Emotional Management
   const [predominantEmotion, setPredominantEmotion] = useState('Calma');
+  const [hardestEmotionToManage, setHardestEmotionToManage] = useState('');
   const [customEmotion, setCustomEmotion] = useState('');
   const [intensity, setIntensity] = useState(5);
   const [neuroplasticityToolApplied, setNeuroplasticityToolApplied] = useState(COMMON_NEURO_TOOLS[0]);
@@ -97,11 +99,13 @@ export const AddSessionModal: React.FC<AddSessionModalProps> = ({
         nutrition,
         exercise,
         rest,
+        overallDecisionsQuality,
         vitalEnergyScore,
         decisionNotes,
       },
       emotionalManagement: {
         predominantEmotion: finalEmotion,
+        hardestEmotionToManage: hardestEmotionToManage.trim() || undefined,
         intensity,
         neuroplasticityToolApplied: finalTool,
         interferedWithDecisions,
@@ -169,10 +173,42 @@ export const AddSessionModal: React.FC<AddSessionModalProps> = ({
 
           {/* Module 1: Vital Decisions */}
           <div className="p-4 bg-white rounded-xl border border-[#EADBCA] space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#581420] flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#C38B3A]" />
-              1. Calificación de Decisiones Diarias (Pilares Biológicos)
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#581420] flex items-center gap-2">
+                <Zap className="w-4 h-4 text-[#C38B3A]" />
+                1. Calificación de Decisiones Diarias
+              </h4>
+              <span className="font-mono text-xs font-bold text-[#581420] bg-[#FAF7F2] px-2.5 py-0.5 rounded border border-[#EADBCA]">
+                Calidad Global: {overallDecisionsQuality}/10
+              </span>
+            </div>
+
+            <div className="p-3 bg-[#581420]/5 rounded-xl border border-[#581420]/15">
+              <label className="block text-xs font-bold text-[#581420] mb-1">
+                Pregunta clave al cliente:
+              </label>
+              <p className="text-xs font-serif italic text-[#2B231F] mb-2">
+                "Del 1 al 10, ¿cómo calificarías la calidad de tus decisiones hoy y entre sesión y sesión?"
+              </p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="0.5"
+                  value={overallDecisionsQuality}
+                  onChange={e => setOverallDecisionsQuality(parseFloat(e.target.value))}
+                  className="flex-1 accent-[#581420]"
+                />
+                <span className="font-mono text-base font-bold text-[#581420] w-12 text-right">
+                  {overallDecisionsQuality}
+                </span>
+              </div>
+            </div>
+
+            <span className="text-[11px] font-bold text-[#6A6057] uppercase tracking-wider block">
+              Desglose en los 3 Pilares Biológicos:
+            </span>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="p-2.5 bg-[#FAF7F2] rounded-lg border border-[#EADBCA]">
@@ -241,6 +277,22 @@ export const AddSessionModal: React.FC<AddSessionModalProps> = ({
               <Heart className="w-4 h-4 text-[#C38B3A]" />
               2. Gestión Emocional & Neuroplasticidad Aplicada
             </h4>
+
+            <div className="p-3 bg-[#581420]/5 rounded-xl border border-[#581420]/15">
+              <label className="block text-xs font-bold text-[#581420] mb-1">
+                Pregunta clave al cliente:
+              </label>
+              <p className="text-xs font-serif italic text-[#2B231F] mb-1.5">
+                "¿Cuál fue la emoción que más te costó entender o gestionar entre sesión y sesión?"
+              </p>
+              <input
+                type="text"
+                value={hardestEmotionToManage}
+                onChange={e => setHardestEmotionToManage(e.target.value)}
+                placeholder="Ej. Frustración al no llegar a tiempo, Ansiedad por sobrecarga laboral..."
+                className="w-full px-3 py-1.5 bg-white rounded-lg border border-[#DACDC0] text-xs font-semibold text-[#8C3A49]"
+              />
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>

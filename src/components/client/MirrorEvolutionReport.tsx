@@ -100,6 +100,18 @@ export const MirrorEvolutionReport: React.FC<MirrorEvolutionReportProps> = ({
         )}
       </div>
 
+      {/* Motivo de Consulta & Punto de Partida */}
+      {(client.consultationReason || baseline.consultationReason) && (
+        <div className="p-6 bg-[#FAF7F2] border-b border-[#EFE7DC]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#C38B3A] block">
+            Sesión 1 · Motivo de Consulta & Punto de Partida Emocional
+          </span>
+          <p className="text-sm font-serif italic text-[#2B231F] mt-1 bg-white p-3.5 rounded-xl border border-[#EADBCA] shadow-2xs">
+            "{client.consultationReason || baseline.consultationReason}"
+          </p>
+        </div>
+      )}
+
       {/* Primary KPI Evolution Triad */}
       <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#EFE7DC] border-b border-[#EFE7DC] bg-[#FAF7F2]">
         {/* KPI 1: Vital Energy */}
@@ -206,7 +218,7 @@ export const MirrorEvolutionReport: React.FC<MirrorEvolutionReportProps> = ({
             Gráfico Espejo: Rueda de la Vida (Antes vs Después)
           </h3>
           <p className="text-[11px] text-[#6A6057] text-center mb-2">
-            Expansión de la satisfacción en las 7 áreas clave del neurocoaching
+            Expansión de la satisfacción en las 8 áreas clave del neurocoaching
           </p>
           <RadarChart
             initialData={baseline.lifeWheel}
@@ -297,6 +309,76 @@ export const MirrorEvolutionReport: React.FC<MirrorEvolutionReportProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Historial Sesión a Sesión: Calidad de Decisiones & Emoción Predominante */}
+      {sessions.length > 0 && (
+        <div className="p-6 sm:p-8 bg-white border-t border-[#EFE7DC]">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-sm font-serif font-bold text-[#581420] flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-[#C38B3A]" />
+                Registro Sesión a Sesión: Calidad de Decisiones & Emoción Predominante
+              </h3>
+              <p className="text-xs text-[#6A6057] mt-0.5">
+                Seguimiento empírico de la calidad de decisiones en los 3 pilares biológicos (Alimentación, Ejercicio, Descanso) y el estado emocional sesión a sesión.
+              </p>
+            </div>
+            <span className="text-[11px] font-mono text-[#8C8176]">
+              {sessions.length} sesiones computadas
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border border-[#EADBCA] rounded-xl overflow-hidden">
+              <thead className="bg-[#FAF7F2] text-[#581420] border-b border-[#EADBCA] font-serif uppercase tracking-wider text-[10px]">
+                <tr>
+                  <th className="p-2.5 font-bold">Sesión</th>
+                  <th className="p-2.5 font-bold">Fecha</th>
+                  <th className="p-2.5 font-bold text-center">🥗 Alimentación</th>
+                  <th className="p-2.5 font-bold text-center">🏃 Ejercicio</th>
+                  <th className="p-2.5 font-bold text-center">💤 Descanso</th>
+                  <th className="p-2.5 font-bold text-center">⚡ Calidad Global</th>
+                  <th className="p-2.5 font-bold">Emoción Predominante</th>
+                  <th className="p-2.5 font-bold">Herramienta Neuro</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#F2ECE3]">
+                {sessions.map((s) => (
+                  <tr key={s.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
+                    <td className="p-2.5 font-bold text-[#581420] whitespace-nowrap">
+                      Sesión {s.sessionNumber}
+                    </td>
+                    <td className="p-2.5 text-[#6A6057] font-mono text-[11px] whitespace-nowrap">
+                      {s.date}
+                    </td>
+                    <td className="p-2.5 text-center font-mono font-semibold">
+                      {s.vitalDecisions.nutrition} <span className="text-gray-400 text-[10px]">/10</span>
+                    </td>
+                    <td className="p-2.5 text-center font-mono font-semibold">
+                      {s.vitalDecisions.exercise} <span className="text-gray-400 text-[10px]">/10</span>
+                    </td>
+                    <td className="p-2.5 text-center font-mono font-semibold">
+                      {s.vitalDecisions.rest} <span className="text-gray-400 text-[10px]">/10</span>
+                    </td>
+                    <td className="p-2.5 text-center font-mono font-bold text-[#581420] bg-[#581420]/5">
+                      {s.vitalDecisions.overallDecisionsQuality ?? s.vitalDecisions.vitalEnergyScore} <span className="text-gray-400 text-[10px]">/10</span>
+                    </td>
+                    <td className="p-2.5 font-semibold text-[#8C3A49]">
+                      {s.emotionalManagement.predominantEmotion}
+                      <span className="text-[10px] text-gray-500 font-mono ml-1">
+                        ({s.emotionalManagement.intensity}/10)
+                      </span>
+                    </td>
+                    <td className="p-2.5 text-[#4A413B] text-[11px] max-w-xs truncate" title={s.emotionalManagement.neuroplasticityToolApplied}>
+                      {s.emotionalManagement.neuroplasticityToolApplied}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Key Milestones & Boicot Prevention Protocol */}
       {finalEvaluation && (

@@ -269,7 +269,7 @@ export const ENNEAGRAM_QUESTIONNAIRE: EnneagramDiagnosticItem[] = [
 ];
 
 // -------------------------------------------------------------------------
-// 2. CUESTIONARIO DIAGNÓSTICO DE CREENCIAS POR ÁREA DE VIDA (7 ÁREAS)
+// 2. CUESTIONARIO DIAGNÓSTICO DE CREENCIAS POR ÁREA DE VIDA (8 ÁREAS)
 // -------------------------------------------------------------------------
 export interface BeliefDiagnosticItem {
   id: string;
@@ -299,117 +299,135 @@ export const BELIEFS_QUESTIONNAIRE: BeliefDiagnosticItem[] = [
     interpretation: 'Soberanía biológica y respeto por los ciclos circadianos y de descanso.',
   },
 
-  // 2. Pareja
+  // 2. Finanzas
+  {
+    id: 'bel_fin_1',
+    areaKey: 'finanzas',
+    areaLabel: 'Vínculo con Finanzas',
+    statement: 'El dinero es fuente constante de estrés y escasez; nunca siento que sea suficiente para relajarme.',
+    type: 'limiting',
+    interpretation: 'Ansiedad por escasez o reactividad emocional ante la economía personal.',
+  },
+  {
+    id: 'bel_fin_2',
+    areaKey: 'finanzas',
+    areaLabel: 'Vínculo con Finanzas',
+    statement: 'Gestiono mi economía con claridad, estructura, visión de abundancia y decisiones serenas.',
+    type: 'empowered',
+    interpretation: 'Soberanía financiera sin reactividad emocional.',
+  },
+
+  // 3. Pareja o Vida Afectiva
   {
     id: 'bel_par_1',
     areaKey: 'pareja',
-    areaLabel: 'Pareja o Vida Amorosa',
-    statement: 'Si muestro mi cansancio o debilidad ante mi pareja, perderé su admiración o me abandonará.',
+    areaLabel: 'Vínculo de Pareja o Vida Afectiva',
+    statement: 'Si muestro mi cansancio, vulnerabilidad o desacuerdo, perderé el amor o pondré en riesgo el vínculo.',
     type: 'limiting',
-    interpretation: 'Vínculo condicionado por el desempeño y miedo al rechazo.',
+    interpretation: 'Vínculo condicionado por la complacencia o el miedo al abandono.',
   },
   {
     id: 'bel_par_2',
     areaKey: 'pareja',
-    areaLabel: 'Pareja o Vida Amorosa',
-    statement: 'La intimidad amorosa profunda nace de poder ser vulnerable y auténtico sin caretas.',
+    areaLabel: 'Vínculo de Pareja o Vida Afectiva',
+    statement: 'La intimidad amorosa profunda y nutritiva nace de ser vulnerable, auténtico/a y poner límites sanos.',
     type: 'empowered',
     interpretation: 'Disponibilidad afectiva segura e interdependiente.',
   },
 
-  // 3. Familia
+  // 4. Vocación
+  {
+    id: 'bel_voc_1',
+    areaKey: 'vocacion',
+    areaLabel: 'Vínculo con Vocación',
+    statement: 'Siento que postergo mis dones reales y mi propósito profundo por mandatos o miedo a no encajar.',
+    type: 'limiting',
+    interpretation: 'Desconexión vocacional y falta de coherencia con el propio sentido de vida.',
+  },
+  {
+    id: 'bel_voc_2',
+    areaKey: 'vocacion',
+    areaLabel: 'Vínculo con Vocación',
+    statement: 'Mi vitalidad y dones únicos florecen cuando alineo mis elecciones diarias con mi vocación profunda.',
+    type: 'empowered',
+    interpretation: 'Coherencia interna entre talentos, sentido trascendente y decisiones de vida.',
+  },
+
+  // 5. Trabajo
+  {
+    id: 'bel_trab_1',
+    areaKey: 'trabajo',
+    areaLabel: 'Vínculo con Trabajo',
+    statement: 'Mi rutina laboral me drena y me sobrecarga; siento que debo cargar con todo para que funcione.',
+    type: 'limiting',
+    interpretation: 'Sobrecarga laboral, límites porosos y reactividad simpática en el trabajo.',
+  },
+  {
+    id: 'bel_trab_2',
+    areaKey: 'trabajo',
+    areaLabel: 'Vínculo con Trabajo',
+    statement: 'Ejerzo mi labor diaria con límites claros, solvencia y preservando mi bienestar físico y mental.',
+    type: 'empowered',
+    interpretation: 'Soberanía profesional, asertividad y balance en el quehacer cotidiano.',
+  },
+
+  // 6. Ocio y Recreación
+  {
+    id: 'bel_oc_1',
+    areaKey: 'ocio',
+    areaLabel: 'Vínculo con Ocio y Recreación',
+    statement: 'Dedicar tiempo a actividades que no producen un resultado útil me genera profunda culpa.',
+    type: 'limiting',
+    interpretation: 'Intolerancia al no-hacer; boicot de la regeneración celular y creativa.',
+  },
+  {
+    id: 'bel_oc_2',
+    areaKey: 'ocio',
+    areaLabel: 'Vínculo con Ocio y Recreación',
+    statement: 'El juego, la naturaleza y el tiempo libre regeneran mi neuroplasticidad y vitalidad integral.',
+    type: 'empowered',
+    interpretation: 'El goce y el descanso como necesidad biológica vital y fuente de salud.',
+  },
+
+  // 7. Familia
   {
     id: 'bel_fam_1',
     areaKey: 'familia',
-    areaLabel: 'Familia Primaria y Secundaria',
-    statement: 'Tengo que cargar con las demandas y expectativas familiares para no sentir culpa.',
+    areaLabel: 'Vínculo con Familia',
+    statement: 'Tengo que cargar con las demandas y expectativas familiares para no sentir culpa ni desunión.',
     type: 'limiting',
     interpretation: 'Mandatos heredados que asfixian la autonomía.',
   },
   {
     id: 'bel_fam_2',
     areaKey: 'familia',
-    areaLabel: 'Familia Primaria y Secundaria',
+    areaLabel: 'Vínculo con Familia',
     statement: 'Honro a mi familia poniendo límites sanos y viviendo desde mi propia soberanía personal.',
     type: 'empowered',
     interpretation: 'Diferenciación sana y lazos afectivos libres de culpa.',
   },
 
-  // 4. Amigos
+  // 8. Amigos y Vida Social
   {
     id: 'bel_ami_1',
     areaKey: 'amigos',
-    areaLabel: 'Amigos y Vida Social',
-    statement: 'No tengo tiempo para vida social; compartir con otros me parece secundario frente a mis exigencias o tareas pendientes.',
+    areaLabel: 'Vínculo con Amigos y Vida Social',
+    statement: 'No tengo tiempo para vida social; compartir con otros me parece secundario frente a mis exigencias.',
     type: 'limiting',
     interpretation: 'Aislamiento defensivo y postergación del goce vincular.',
   },
   {
     id: 'bel_ami_2',
     areaKey: 'amigos',
-    areaLabel: 'Amigos y Vida Social',
-    statement: 'La risa, la pertenencia y las conversaciones genuinas regulan mi sistema nervioso.',
+    areaLabel: 'Vínculo con Amigos y Vida Social',
+    statement: 'La risa, la pertenencia y las conversaciones genuinas nutren y regulan mi sistema nervioso.',
     type: 'empowered',
-    interpretation: 'Red de apoyo nutritiva que reduce el cortisol.',
-  },
-
-  // 5. Trabajo y Vocación
-  {
-    id: 'bel_trab_1',
-    areaKey: 'trabajo_vocacion',
-    areaLabel: 'Propósito y Vocación',
-    statement: 'Siento que dedico mi energía diaria a ocupaciones que me drenan por miedo a perder seguridad o aprobación.',
-    type: 'limiting',
-    interpretation: 'Desalineación vocacional y falta de coherencia con el propio sentido de vida.',
-  },
-  {
-    id: 'bel_trab_2',
-    areaKey: 'trabajo_vocacion',
-    areaLabel: 'Propósito y Vocación',
-    statement: 'Mi vitalidad, dones y serenidad florecen cuando lo que elijo hacer cada día está alineado con mi vocación y propósito genuino.',
-    type: 'empowered',
-    interpretation: 'Coherencia interna entre talentos, sentido de vida y decisiones diarias.',
-  },
-
-  // 6. Finanzas
-  {
-    id: 'bel_fin_1',
-    areaKey: 'finanzas',
-    areaLabel: 'Finanzas Personales',
-    statement: 'El dinero es fuente constante de estrés; nunca siento que sea suficiente para estar tranquilo.',
-    type: 'limiting',
-    interpretation: 'Ansiedad por escasez o mala relación con la abundancia.',
-  },
-  {
-    id: 'bel_fin_2',
-    areaKey: 'finanzas',
-    areaLabel: 'Finanzas Personales',
-    statement: 'Gestiono mi economía con estructura, visión de abundancia y serenidad interior.',
-    type: 'empowered',
-    interpretation: 'Soberanía financiera sin reactividad emocional.',
-  },
-
-  // 7. Ocio
-  {
-    id: 'bel_oc_1',
-    areaKey: 'ocio',
-    areaLabel: 'Ocio y Tiempo Libre',
-    statement: 'Dedicar tiempo a actividades que no producen un resultado útil me genera profunda culpa.',
-    type: 'limiting',
-    interpretation: 'Intolerancia al no-hacer; boicot de la regeneración celular.',
-  },
-  {
-    id: 'bel_oc_2',
-    areaKey: 'ocio',
-    areaLabel: 'Ocio y Tiempo Libre',
-    statement: 'El juego, la pausa y el descanso regeneran mi neuroplasticidad y mi bienestar integral.',
-    type: 'empowered',
-    interpretation: 'El descanso como necesidad biológica vital y fuente de equilibrio emocional.',
+    interpretation: 'Red de apoyo nutritiva que reduce el cortisol y enriquece la vida.',
   },
 ];
 
 // -------------------------------------------------------------------------
-// 3. CUESTIONARIO DE SATISFACCIÓN (RUEDA DE LA VIDA OBJETIVA - 7 ÁREAS)
+// 3. CUESTIONARIO DE SATISFACCIÓN (RUEDA DE LA VIDA OBJETIVA - 8 ÁREAS)
 // -------------------------------------------------------------------------
 export interface LifeSatisfactionDiagnosticItem {
   areaKey: LifeAreaKey;
@@ -430,51 +448,59 @@ export const LIFE_SATISFACTION_ITEMS: LifeSatisfactionDiagnosticItem[] = [
     highScoreAnchor: 'Vitalidad plena, sueño reparador y conexión intuitiva con mi cuerpo (7-10).',
   },
   {
-    areaKey: 'pareja',
-    label: 'Pareja o Vida Amorosa',
-    diagnosticQuestion: '¿Cómo calificarías el nivel de complicidad, comunicación honesta y disfrute en tu vida amorosa?',
-    lowScoreAnchor: 'Distancia emocional, discusiones continuas o soledad dolorosa (1-3).',
-    mediumScoreAnchor: 'Estable pero con falta de intimidad o temas no hablados (4-6).',
-    highScoreAnchor: 'Vínculo seguro, disfrute mutuo y apoyo incondicional (7-10).',
-  },
-  {
-    areaKey: 'familia',
-    label: 'Familia Primaria y Secundaria',
-    diagnosticQuestion: '¿Qué grado de paz y libertad sientes en la relación con tu familia de origen?',
-    lowScoreAnchor: 'Tensión pesada, mandatos asfixiantes o discusiones no resueltas (1-3).',
-    mediumScoreAnchor: 'Relación cordial pero con límites frágiles (4-6).',
-    highScoreAnchor: 'Paz profunda, respeto mutuo y límites saludables (7-10).',
-  },
-  {
-    areaKey: 'amigos',
-    label: 'Amigos y Vida Social',
-    diagnosticQuestion: '¿En qué medida cuentas con amistades seguras con quienes reír, desahogarte y ser tú mismo/a?',
-    lowScoreAnchor: 'Aislamiento casi total o vínculos superficiales por compromiso (1-3).',
-    mediumScoreAnchor: 'Pocos momentos para compartir pero con personas valiosas (4-6).',
-    highScoreAnchor: 'Red de contención afectuosa, risas y encuentros periódicos (7-10).',
-  },
-  {
-    areaKey: 'trabajo_vocacion',
-    label: 'Propósito y Vocación',
-    diagnosticQuestion: '¿En qué porcentaje sientes que tus actividades diarias encienden tu vocación y nutren tu energía vital?',
-    lowScoreAnchor: 'Vacío existencial, estrés crónico o profunda desalineación (1-3).',
-    mediumScoreAnchor: 'Ocupaciones que sostienen mi economía pero no me realizan del todo (4-6).',
-    highScoreAnchor: 'Plena alineación con mi propósito, sentido de vida y satisfacción profunda (7-10).',
-  },
-  {
     areaKey: 'finanzas',
-    label: 'Finanzas Personales',
-    diagnosticQuestion: '¿Cuál es tu grado de tranquilidad, control y perspectiva de crecimiento económico?',
-    lowScoreAnchor: 'Miedo constante a la escasez, deudas o descontrol (1-3).',
-    mediumScoreAnchor: 'Cubro mis gastos pero me falta previsión o ahorro sólido (4-6).',
-    highScoreAnchor: 'Soberanía financiera, orden patrimonial y tranquilidad (7-10).',
+    label: 'Vínculo con Finanzas',
+    diagnosticQuestion: '¿Cuál es tu grado de tranquilidad, control y perspectiva de crecimiento en tu relación con el dinero?',
+    lowScoreAnchor: 'Miedo constante a la escasez, deudas o sensación de descontrol económico (1-3).',
+    mediumScoreAnchor: 'Cubro mis gastos pero me falta previsión o ahorro con tranquilidad (4-6).',
+    highScoreAnchor: 'Soberanía financiera, orden patrimonial y paz interior con el dinero (7-10).',
+  },
+  {
+    areaKey: 'pareja',
+    label: 'Vínculo de Pareja o Vida Afectiva',
+    diagnosticQuestion: '¿Cómo calificarías el nivel de complicidad, comunicación honesta y disfrute en tu vida afectiva/pareja?',
+    lowScoreAnchor: 'Distancia emocional, discusiones continuas o soledad dolorosa (1-3).',
+    mediumScoreAnchor: 'Estable pero con falta de intimidad o temas importantes no hablados (4-6).',
+    highScoreAnchor: 'Vínculo seguro, disfrute mutuo, ternura y apoyo incondicional (7-10).',
+  },
+  {
+    areaKey: 'vocacion',
+    label: 'Vínculo con Vocación',
+    diagnosticQuestion: '¿En qué porcentaje sientes que tu vida honra tu vocación profunda, tus talentos y tu propósito real?',
+    lowScoreAnchor: 'Vacío existencial o postergación total de mis dones auténticos (1-3).',
+    mediumScoreAnchor: 'Reconozco mis dones pero no logro dedicarles el espacio que merecen (4-6).',
+    highScoreAnchor: 'Plena alineación con mi vocación, sentido de vida y satisfacción profunda (7-10).',
+  },
+  {
+    areaKey: 'trabajo',
+    label: 'Vínculo con Trabajo',
+    diagnosticQuestion: '¿Cómo calificarías tu nivel de satisfacción, clima diario y manejo de la carga laboral en tu trabajo actual?',
+    lowScoreAnchor: 'Estrés laboral crónico, sobrecarga que me enferma o clima tóxico (1-3).',
+    mediumScoreAnchor: 'Cumplo con mis responsabilidades pero con desgaste de energía (4-6).',
+    highScoreAnchor: 'Desempeño fluido, límites respetados, valoración y equilibrio profesional (7-10).',
   },
   {
     areaKey: 'ocio',
-    label: 'Ocio y Tiempo Libre',
-    diagnosticQuestion: '¿Disfrutas de espacios semanales de recreación, naturaleza y juego sin culpa?',
-    lowScoreAnchor: 'Cero tiempo de ocio o con culpa permanente de producir (1-3).',
-    mediumScoreAnchor: 'Algún momento el fin de semana pero con la mente en pendientes (4-6).',
-    highScoreAnchor: 'Tiempo lúdico sagrado, hobbies activos y regeneración mental (7-10).',
+    label: 'Vínculo con Ocio y Recreación',
+    diagnosticQuestion: '¿Disfrutas de espacios semanales de recreación, naturaleza, hobbies y juego sin culpa?',
+    lowScoreAnchor: 'Cero tiempo de ocio o con culpa permanente por no estar produciendo (1-3).',
+    mediumScoreAnchor: 'Algún momento el fin de semana pero con la mente rumiando pendientes (4-6).',
+    highScoreAnchor: 'Tiempo lúdico sagrado, hobbies activos y regeneración mental placentera (7-10).',
+  },
+  {
+    areaKey: 'familia',
+    label: 'Vínculo con Familia',
+    diagnosticQuestion: '¿Qué grado de paz, respeto y límites saludables experimentas en la relación con tu familia?',
+    lowScoreAnchor: 'Tensión pesada, mandatos asfixiantes o reclamos constantes no resueltos (1-3).',
+    mediumScoreAnchor: 'Relación cordial pero con límites frágiles que a veces me drenan (4-6).',
+    highScoreAnchor: 'Paz profunda, respeto mutuo y límites afectivos saludables y firmes (7-10).',
+  },
+  {
+    areaKey: 'amigos',
+    label: 'Vínculo con Amigos y Vida Social',
+    diagnosticQuestion: '¿En qué medida cuentas con amistades seguras con quienes reír, desahogarte y sentirte acompañado/a?',
+    lowScoreAnchor: 'Aislamiento social o vínculos superficiales sostenidos por compromiso (1-3).',
+    mediumScoreAnchor: 'Pocos momentos para compartir pero con algunas personas valiosas (4-6).',
+    highScoreAnchor: 'Red de contención afectuosa, risas periódicas y complicidad nutritiva (7-10).',
   },
 ];

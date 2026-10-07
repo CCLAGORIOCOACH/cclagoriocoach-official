@@ -24,11 +24,13 @@ import {
 interface PublicLandingDashboardProps {
   metrics: PublicAggregatedMetrics;
   isEmbedMode?: boolean;
+  showEmbedTools?: boolean;
 }
 
 export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
   metrics,
   isEmbedMode = false,
+  showEmbedTools = false,
 }) => {
   const [copiedEmbed, setCopiedEmbed] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
@@ -102,23 +104,25 @@ export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
               <span> · ICF Neurocoach & Directora de Estrategia</span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={() => setIsEmbedModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs transition-all border border-white/20 active:scale-95"
-              >
-                <Code className="w-4 h-4 text-[#E4B062]" />
-                <span>Integrar en mi Landing (Guía & Código)</span>
-              </button>
+            {showEmbedTools && (
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={() => setIsEmbedModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs transition-all border border-white/20 active:scale-95"
+                >
+                  <Code className="w-4 h-4 text-[#E4B062]" />
+                  <span>Integrar en mi Landing (Guía & Código)</span>
+                </button>
 
-              <button
-                onClick={handleCopyIframe}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#C38B3A] hover:bg-[#D49C4B] text-[#2B231F] font-bold text-xs transition-all shadow-md active:scale-95"
-              >
-                {copiedEmbed ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                <span>{copiedEmbed ? '¡Código Copiado!' : 'Copiar Iframe Rápido'}</span>
-              </button>
-            </div>
+                <button
+                  onClick={handleCopyIframe}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#C38B3A] hover:bg-[#D49C4B] text-[#2B231F] font-bold text-xs transition-all shadow-md active:scale-95"
+                >
+                  {copiedEmbed ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  <span>{copiedEmbed ? '¡Código Copiado!' : 'Copiar Iframe Rápido'}</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -176,7 +180,7 @@ export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
           </div>
 
           <p className="text-xs text-[#6A6057] mt-3 leading-relaxed">
-            Las creencias limitantes que drenaban energía cayeron del {metrics.beliefsEvolution.limitingStartAvg}% al {metrics.beliefsEvolution.limitingCurrentAvg}% en las 7 áreas clave.
+            Las creencias limitantes que drenaban energía cayeron del {metrics.beliefsEvolution.limitingStartAvg}% al {metrics.beliefsEvolution.limitingCurrentAvg}% en las 8 áreas clave.
           </p>
 
           <div className="mt-4 pt-3 border-t border-[#F2ECE3] flex items-center justify-between text-xs font-mono text-[#8C8176]">
@@ -228,7 +232,7 @@ export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
               Rueda de la Vida Global (Antes vs Después)
             </h3>
             <p className="text-xs text-[#6A6057]">
-              Promedio empírico de satisfacción en las 7 áreas clave del programa
+              Promedio empírico de satisfacción en las 8 áreas clave del programa
             </p>
           </div>
 
@@ -360,15 +364,9 @@ export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
 
           <div className="flex items-center justify-between pt-3 border-t border-[#EADBCA] text-xs text-[#6A6057]">
             <span>Respaldado en neurobiología y coaching ICF</span>
-            <a
-              href="https://cclagoriocoach.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#581420] font-bold hover:underline inline-flex items-center gap-1"
-            >
-              <span>Conocer más en cclagoriocoach.com</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            <span className="text-[#581420] font-semibold">
+              Metodología ALIVE GAME
+            </span>
           </div>
         </div>
       </div>
@@ -466,7 +464,7 @@ export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
                 <span className="text-xs text-rose-700 font-mono">en área de drenaje</span>
               </div>
               <p className="text-xs text-rose-900/90 leading-relaxed">
-                Desequilibrio agudo en una de las 7 áreas que absorbe el foco y la vitalidad del resto de la vida.
+                Desequilibrio agudo en una de las 8 áreas que absorbe el foco y la vitalidad del resto de la vida.
               </p>
             </div>
           </div>
@@ -533,13 +531,15 @@ export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
             </span>
           </div>
 
-          <button
-            onClick={() => setIsEmbedModalOpen(true)}
-            className="text-[#581420] font-bold hover:underline inline-flex items-center gap-1 shrink-0"
-          >
-            <span>Ver cómo incrustar estas métricas en tu web</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          {showEmbedTools && (
+            <button
+              onClick={() => setIsEmbedModalOpen(true)}
+              className="text-[#581420] font-bold hover:underline inline-flex items-center gap-1 shrink-0"
+            >
+              <span>Ver cómo incrustar estas métricas en tu web</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
 
