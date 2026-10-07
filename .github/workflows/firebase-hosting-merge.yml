@@ -1,5 +1,5 @@
 name: Deploy to Firebase Hosting on merge
-'on':
+on:
   push:
     branches:
       - main
@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: npm ci
+        run: npm install --legacy-peer-deps
       - name: Build production SPA
         run: npm run build
       - name: Deploy to Firebase Hosting
