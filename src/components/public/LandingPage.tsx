@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PublicAggregatedMetrics } from '../../types/coaching';
 import { PublicLandingDashboard } from './PublicLandingDashboard';
+import { trackEvent } from '../../services/firebase';
 import ccPerfilImg from './CC PERFIL.png';
 import {
   Sparkles,
@@ -26,13 +27,23 @@ interface LandingPageProps {
 export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }) => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const toggleFaq = (idx: number) => {
-    setOpenFaq(openFaq === idx ? null : idx);
+  const toggleFaq = (idx: number, questionText?: string) => {
+    const isOpening = openFaq !== idx;
+    setOpenFaq(isOpening ? idx : null);
+    if (isOpening) {
+      trackEvent('faq_toggle', { question_idx: idx, question: questionText || `faq_${idx}` });
+    }
   };
 
   const scrollTo = (id: string) => {
+    trackEvent('menu_navigation', { target_section: id });
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleGoToAdmin = () => {
+    trackEvent('admin_portal_click');
+    if (onGoToAdmin) onGoToAdmin();
   };
 
   const WHATSAPP_URL =
@@ -45,7 +56,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div
-              onClick={onGoToAdmin}
+              onClick={handleGoToAdmin}
               className="w-10 h-10 rounded-2xl bg-[#581420] text-[#E4B062] flex items-center justify-center font-serif font-bold text-xl shadow-sm border border-[#C38B3A]/30 cursor-pointer select-none"
               title="cclagoriocoach.com/admin"
             >
@@ -88,6 +99,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
               href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('cta_whatsapp_click', { location: 'navbar', label: 'Escribime' })}
               className="px-4 py-2 bg-[#581420] hover:bg-[#6D1B29] text-white text-xs font-bold rounded-full transition-all shadow-md active:scale-95 flex items-center gap-1.5"
             >
               <MessageCircle className="w-3.5 h-3.5 text-[#E4B062]" />
@@ -112,6 +124,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
             href="https://youtu.be/QszbAgZrhbo"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackEvent('video_view_click', { video: 'daniel_goleman_entrevista' })}
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#581420] hover:bg-[#6D1B29] text-white text-xs font-semibold rounded-full transition-colors shadow-2xs"
           >
             <Play className="w-3 h-3 text-[#E4B062] fill-[#E4B062]" />
@@ -142,6 +155,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent('cta_whatsapp_click', { location: 'hero', label: 'Quiero conversar' })}
                 className="px-6 py-3.5 bg-[#581420] hover:bg-[#6D1B29] text-white text-sm font-medium rounded-full transition-all shadow-md active:scale-95 flex items-center gap-2"
               >
                 <span>Quiero conversar</span>
@@ -682,6 +696,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
                   href="https://alivegamers.com/personal"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('cta_booking_click', { plan: 'sesion_transformadora_75min', location: 'formato_card_1', target: 'alivegamers.com/personal' })}
                   className="w-full py-3.5 text-center bg-[#581420] hover:bg-[#6D1B29] text-white text-xs sm:text-sm font-bold rounded-full transition-all shadow-md active:scale-95 block"
                 >
                   Más info de sesión transformadora
@@ -749,6 +764,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
                   href="https://alivegamers.com/personal"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('cta_booking_click', { plan: 'pack_6_sesiones', location: 'formato_card_2', target: 'alivegamers.com/personal' })}
                   className="w-full py-3.5 text-center bg-[#581420] hover:bg-[#6D1B29] text-white text-xs sm:text-sm font-bold rounded-full transition-all shadow-md active:scale-95 block"
                 >
                   Más info del programa de 6 sesiones
@@ -757,6 +773,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
                   href="https://wa.me/5491155030361?text=Hola%20Cecilia%2C%20quiero%20consultar%20por%20el%20pack%20de%206%20sesiones"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('cta_whatsapp_click', { location: 'formato_card_2_whatsapp', label: 'Consultar por pack 6' })}
                   className="w-full py-2.5 text-center bg-white hover:bg-[#FAF7F2] text-[#581420] border border-[#DACDC0] text-xs font-semibold rounded-full transition-all block text-center"
                 >
                   O consultame por WhatsApp
@@ -812,6 +829,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
                   href="https://alivegamers.com/antiboicot"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackEvent('cta_booking_click', { plan: 'alive24_antiboicot', location: 'formato_card_3', target: 'alivegamers.com/antiboicot' })}
                   className="w-full py-3.5 text-center bg-[#FAF7F2] hover:bg-[#F3EADF] text-[#2B231F] border border-[#DACDC0] text-xs sm:text-sm font-bold rounded-full transition-all active:scale-95 block"
                 >
                   Más info de ALIVE 24 (Anti-Boicot)
@@ -875,6 +893,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
                 href="https://alivegamers.com/interdisciplinario"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent('cta_booking_click', { plan: 'interdisciplinario_360', location: 'card_interdisciplinario', target: 'alivegamers.com/interdisciplinario' })}
                 className="w-full py-3 text-center bg-[#581420] hover:bg-[#6D1B29] text-white text-xs font-bold rounded-full transition-all shadow-md block"
               >
                 Más info de ALIVE Interdisciplinario
@@ -916,7 +935,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
             ].map((faq, i) => (
               <div key={i} className="py-4">
                 <button
-                  onClick={() => toggleFaq(i)}
+                  onClick={() => toggleFaq(i, faq.q)}
                   className="w-full flex items-center justify-between text-left font-serif text-base sm:text-lg font-medium text-[#2B231F] hover:text-[#581420] transition-colors"
                 >
                   <span>{faq.q}</span>
@@ -975,6 +994,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
               href="https://alivegamers.com/personal"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('cta_booking_click', { plan: 'empezar_paso_3_reserva', location: 'empezar_seccion', target: 'alivegamers.com/personal' })}
               className="px-6 py-3.5 bg-[#581420] hover:bg-[#6D1B29] text-white text-sm font-medium rounded-full transition-all shadow-md active:scale-95"
             >
               Reservar mi sesión
@@ -983,6 +1003,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
               href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('cta_whatsapp_click', { location: 'empezar_seccion_conversar', label: 'Conversar primero' })}
               className="px-6 py-3.5 bg-transparent hover:bg-white text-[#2B231F] border border-[#2B231F]/30 text-sm font-medium rounded-full transition-all"
             >
               Conversar primero
@@ -1005,6 +1026,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
               href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('cta_whatsapp_click', { location: 'final_cierre', label: 'Quiero conversar' })}
               className="inline-flex items-center gap-2 px-8 py-4 bg-[#581420] hover:bg-[#6D1B29] text-white text-sm font-medium rounded-full transition-all shadow-lg active:scale-95"
             >
               <MessageCircle className="w-4 h-4 text-[#E4B062]" />
@@ -1019,7 +1041,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span
-              onClick={onGoToAdmin}
+              onClick={handleGoToAdmin}
               className="cursor-pointer select-none hover:text-[#581420] transition-colors"
               title="cclagoriocoach.com/admin"
             >
@@ -1057,6 +1079,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ metrics, onGoToAdmin }
           href="https://alivegamers.com/personal"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackEvent('cta_booking_click', { plan: 'sesion_personal', location: 'sticky_mobile', target: 'alivegamers.com/personal' })}
           className="w-full py-3 bg-[#581420] text-white text-xs font-bold rounded-full text-center block shadow-md active:scale-95"
         >
           Reservar mi sesión

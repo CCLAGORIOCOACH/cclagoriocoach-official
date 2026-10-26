@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PublicAggregatedMetrics, LIFE_AREAS } from '../../types/coaching';
 import { RadarChart } from '../charts/RadarChart';
 import { EmotionsDonutChart } from '../charts/EmotionsDonutChart';
+import { trackEvent } from '../../services/firebase';
 import {
   Sparkles,
   TrendingUp,
@@ -52,13 +53,20 @@ export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
   const handleCopyIframe = () => {
     navigator.clipboard.writeText(embedCode);
     setCopiedEmbed(true);
+    trackEvent('vitrina_share_embed');
     setTimeout(() => setCopiedEmbed(false), 2500);
   };
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(embedUrl);
     setCopiedUrl(true);
+    trackEvent('vitrina_share_url');
     setTimeout(() => setCopiedUrl(false), 2500);
+  };
+
+  const handleTogglePhase = (phase: 'before' | 'after') => {
+    setSimulationPhase(phase);
+    trackEvent('vitrina_phase_toggle', { phase });
   };
 
   return (
@@ -390,7 +398,7 @@ export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
           {/* Segmented Phase Switcher */}
           <div className="p-1.5 bg-[#FAF7F2] rounded-2xl border border-[#DACDC0] flex items-center gap-1 self-start md:self-center shrink-0">
             <button
-              onClick={() => setSimulationPhase('before')}
+              onClick={() => handleTogglePhase('before')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                 simulationPhase === 'before'
                   ? 'bg-[#581420] text-white shadow-md'
@@ -401,7 +409,7 @@ export const PublicLandingDashboard: React.FC<PublicLandingDashboardProps> = ({
               <span>1. Punto de Partida (Día 1)</span>
             </button>
             <button
-              onClick={() => setSimulationPhase('after')}
+              onClick={() => handleTogglePhase('after')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                 simulationPhase === 'after'
                   ? 'bg-emerald-800 text-white shadow-md'
